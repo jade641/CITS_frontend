@@ -3,13 +3,25 @@ import axios from 'axios'
 // Use relative paths so requests go through the Vite dev proxy (same-origin)
 const apiBaseUrl = import.meta.env.VITE_API_URL ?? '/api'
 
+function getSanctumBaseUrl(baseUrl: string): string {
+  if (/^https?:\/\//i.test(baseUrl)) {
+    try {
+      return `${new URL(baseUrl).origin}/`
+    } catch {
+      return '/'
+    }
+  }
+
+  return '/'
+}
+
 const defaultHeaders = {
   Accept: 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 } as const
 
 const sanctumClient = axios.create({
-  baseURL: '/',
+  baseURL: getSanctumBaseUrl(apiBaseUrl),
   withCredentials: true,
   headers: defaultHeaders,
 })
