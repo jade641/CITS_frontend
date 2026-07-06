@@ -14,7 +14,6 @@ export default function IncidentHistory() {
 
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Load incidents from API (assigned to current user) and show resolved/closed
   useEffect(() => {
@@ -24,7 +23,6 @@ export default function IncidentHistory() {
       if (!currentUser) return;
 
       setLoading(true);
-      setError(null);
 
       try {
         const resp = await listIncidents({ per_page: 200, assigned_to_me: true });
@@ -34,7 +32,8 @@ export default function IncidentHistory() {
         setIncidents(resp.data || []);
       } catch (err: any) {
         if (!active) return;
-        setError(err?.response?.data?.message || String(err) || "Failed to load incidents");
+        console.error("Failed to load incidents:", err);
+        setIncidents([]);
       } finally {
         if (active) setLoading(false);
       }

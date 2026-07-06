@@ -23,7 +23,7 @@ export default function Investigation() {
   const [incidentStatuses, setIncidentStatuses] = useState<IncidentStatus[]>([]);
   const [saved, setSaved] = useState(false);
   const [lastSavedNotes, setLastSavedNotes] = useState("");
-  const [uploadingEvidence, setUploadingEvidence] = useState(false);
+  const [_uploadingEvidence, setUploadingEvidence] = useState(false);
   const [evidence, setEvidence] = useState<Array<{ name: string; size: string; type: string; added: string }>>([]);
 
   useEffect(() => {
