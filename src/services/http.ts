@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 // Use relative paths so requests go through the Vite dev proxy (same-origin)
-const apiBaseUrl = import.meta.env.VITE_API_URL ?? '/api'
+const productionApiBaseUrl = 'https://cits-backend-s12z.onrender.com/api'
+const apiBaseUrl = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? '/api' : productionApiBaseUrl)
 
 function getSanctumBaseUrl(baseUrl: string): string {
   if (/^https?:\/\//i.test(baseUrl)) {
