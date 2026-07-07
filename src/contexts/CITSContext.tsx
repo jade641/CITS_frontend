@@ -91,9 +91,13 @@ function getInitials(name: string): string {
   return initials || "U";
 }
 
-function mapRole(primaryRole: User["primary_role"], dbRole?: string | null): UserRole {
-  if (dbRole === "Admin" || primaryRole === "administrator") return "admin";
-  if (dbRole === "Analyst" || primaryRole === "security-analyst") return "analyst";
+function mapRole(primaryRole: User["primary_role"]): UserRole {
+  // primaryRole is the slug from roles table: "administrator", "security-analyst", or "user"
+  if (primaryRole === "administrator") return "admin";
+  if (primaryRole === "security-analyst") return "analyst";
+  if (primaryRole === "user") return "user";
+  
+  // Default to user for safety
   return "user";
 }
 
@@ -102,8 +106,8 @@ function mapUser(user: any): CITSUser {
     id: String(user.id),
     name: user.name,
     email: user.email,
-    role: mapRole(user.primary_role, user.role),
-    rawRole: user.role ?? "Analyst",
+    role: mapRole(user.primary_role),
+    rawRole: user.roles?.[0]?.name ?? "User",
     avatar: getInitials(user.name),
     department: user.department ?? "Unassigned",
     lastLogin: user.last_login_at ?? "Never",
