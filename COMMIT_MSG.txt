@@ -1,0 +1,4 @@
+Chore: Clean up deployment documentation
+
+- Removed outdated DEPLOYMENT.md file
+- Deployment instructions now maintained in backend repo
