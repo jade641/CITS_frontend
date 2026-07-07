@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { 
   ArrowLeft, FileText, Shield, CheckCircle2, Save, Trash2, Upload, 
-  User, MapPin, Calendar, Paperclip, MessageSquare, Search, 
-  Plus, Clock, AlertTriangle, AlertCircle, Lock, ThumbsUp, ThumbsDown, Eye
+  Paperclip, Search, 
+  Plus, Clock, AlertTriangle, AlertCircle, Lock, Eye
 } from "lucide-react";
 import { useCITS, severityColor, statusColor, statusLabel } from "../contexts/CITSContext";
 import { 
@@ -10,7 +10,7 @@ import {
   updateIncidentStatus, saveIncidentTimeline, saveIncidentIocs, 
   saveIncidentAffectedSystems, saveIncidentActionsTaken, saveIncidentSeverity, 
   uploadEvidenceFile, saveIncidentFindings, saveIncidentRemediationActions, 
-  submitIncidentResolution, reviewIncidentResolution, getIncidentAuditLog 
+  submitIncidentResolution, getIncidentAuditLog 
 } from "../services/incidentService";
 import { listUsers } from "../services/userService";
 import { getLookups } from "../services/lookupService";
@@ -65,9 +65,7 @@ export default function Investigation() {
   const [lessonsLearned, setLessonsLearned] = useState("");
   const [remediationActions, setRemediationActions] = useState<IncidentRemediationActionEntry[]>([]);
 
-  // 5. Review Workflow State
-  const [showRejectionForm, setShowRejectionForm] = useState(false);
-  const [rejectionReasonText, setRejectionReasonText] = useState("");
+
 
   // Auto-calculated Severity client-side
   const calculatedSeverity = useMemo(() => {
@@ -476,7 +474,7 @@ export default function Investigation() {
     );
   }
 
-  const isSupervisorOrAdmin = currentUser?.rawRole === "Supervisor" || currentUser?.rawRole === "Admin";
+
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-5">
