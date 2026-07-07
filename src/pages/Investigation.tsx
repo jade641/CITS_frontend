@@ -23,7 +23,6 @@ const BORDER = "rgba(30,60,100,0.35)";
 export default function Investigation() {
   const { selectedTicketId, navigate, currentUser } = useCITS();
   const [incident, setIncident] = useState<Incident | null>(null);
-  const [assignedTickets, setAssignedTickets] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<"details" | "notes" | "evidence" | "findings" | "audit">("details");
@@ -99,7 +98,6 @@ export default function Investigation() {
     }
   }, [confidentiality, integrity, availability, affectedSystemsCount, dataSensitivity]);
 
-  const effectiveSeverity = severityOverride ? severityManual : calculatedSeverity;
 
   // Load ticket & configurations
   useEffect(() => {
@@ -141,7 +139,7 @@ export default function Investigation() {
           // No selected ticket, list assigned ones
           const response = await listIncidents({ assigned_to_me: true, page: 1, per_page: 50 });
           if (!active) return;
-          setAssignedTickets(response.data);
+
           if (response.data.length === 1) {
             setIncident(response.data[0] ?? null);
           } else {
@@ -1206,7 +1204,7 @@ export default function Investigation() {
               </div>
             ) : (
               <div className="space-y-3">
-                {ticket.attachments.map((file, i) => (
+                {ticket.attachments.map((file) => (
                   <div key={file.id} className="p-4 rounded-lg bg-slate-900/40 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
