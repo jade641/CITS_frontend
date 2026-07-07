@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { 
   ArrowLeft, FileText, Shield, CheckCircle2, Save, Trash2, Upload, 
   Paperclip, Search, 
-  Plus, Clock, AlertTriangle, AlertCircle, Lock, Eye
+  Plus, Clock, Lock, Eye
 } from "lucide-react";
 import { useCITS, severityColor, statusColor, statusLabel } from "../contexts/CITSContext";
 import { 
@@ -566,10 +566,10 @@ export default function Investigation() {
           <Clock className="h-3.5 w-3.5" /> NIST SP 800-61 Incident Lifecycle Stages
         </p>
         <div className="flex items-center gap-1 overflow-x-auto pb-2">
-          {LIFECYCLE.map((s, i) => {
+          {LIFECYCLE.map((s, idx) => {
             const statusIdx = LIFECYCLE.indexOf(effectiveStatus as any);
-            const done = i <= statusIdx;
-            const current = i === statusIdx;
+            const done = idx <= statusIdx;
+            const current = idx === statusIdx;
             return (
               <div key={s} className="flex items-center gap-1 shrink-0">
                 <div className="flex flex-col items-center gap-1">
@@ -580,15 +580,15 @@ export default function Investigation() {
                       color: done ? "#93c5fd" : "#475569",
                       boxShadow: current ? "0 0 12px rgba(59,130,246,0.4)" : "none"
                     }}>
-                    {done && !current ? "✓" : i + 1}
+                    {done && !current ? "✓" : idx + 1}
                   </div>
                   <span className="text-[11px] whitespace-nowrap" style={{ color: current ? "#93c5fd" : done ? "#64748b" : "#374151" }}>
                     {LIFECYCLE_LABELS[s]}
                   </span>
                 </div>
-                {i < LIFECYCLE.length - 1 && (
+                {idx < LIFECYCLE.length - 1 && (
                   <div className="w-10 h-0.5 mb-5 mx-1 rounded"
-                    style={{ background: i < statusIdx ? "rgba(59,130,246,0.4)" : "rgba(255,255,255,0.08)" }} />
+                    style={{ background: idx < statusIdx ? "rgba(59,130,246,0.4)" : "rgba(255,255,255,0.08)" }} />
                 )}
               </div>
             );
