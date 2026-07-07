@@ -18,13 +18,14 @@ const SEVERITY_COLORS: Record<string, string> = {
   low: "#22c55e",
 };
 
-const STATUS_ORDER = ["open", "assigned", "in_progress", "pending", "resolved", "closed"] as const;
+const STATUS_ORDER = ["new", "investigating", "contained", "eradicated", "recovering", "pending_review", "closed"] as const;
 const STATUS_LABELS: Record<string, string> = {
-  open: "Open",
-  assigned: "Assigned",
-  in_progress: "In Progress",
-  pending: "Pending",
-  resolved: "Resolved",
+  new: "New",
+  investigating: "Investigating",
+  contained: "Contained",
+  eradicated: "Eradicated",
+  recovering: "Recovering",
+  pending_review: "Pending Review",
   closed: "Closed",
 };
 

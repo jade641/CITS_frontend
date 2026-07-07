@@ -36,6 +36,57 @@ export interface IncidentHistoryEntry {
   updated_at: string
 }
 
+export interface IncidentTimelineEntry {
+  id?: number
+  incident_id?: number
+  occurred_at: string
+  description: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface IncidentIocEntry {
+  id?: number
+  incident_id?: number
+  type: string
+  value: string
+  description: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+export interface IncidentAffectedSystemEntry {
+  id?: number
+  incident_id?: number
+  asset_name: string
+  asset_type: string
+  impact_level: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface IncidentActionTakenEntry {
+  id?: number
+  incident_id?: number
+  occurred_at: string
+  action: string
+  performed_by: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface IncidentRemediationActionEntry {
+  id?: number
+  incident_id?: number
+  description: string
+  owner_id: number
+  due_date: string
+  status: 'Pending' | 'In Progress' | 'Done'
+  owner?: User
+  created_at?: string
+  updated_at?: string
+}
+
 export interface Incident {
   id: number
   ticket_number: string
@@ -47,10 +98,21 @@ export interface Incident {
   reporter_id: number
   current_assignee_id: number | null
   affected_asset: string | null
+  confidentiality_impact: string | null
+  integrity_impact: string | null
+  availability_impact: string | null
+  affected_systems_count: number
+  data_sensitivity: string | null
+  severity_override: boolean
+  severity_override_justification: string | null
   source_ip: string | null
   location: string | null
   impact_summary: string | null
   resolution_notes: string | null
+  root_cause_category: string | null
+  root_cause_explanation: string | null
+  lessons_learned: string | null
+  rejection_reason: string | null
   occurred_at: string
   reported_at: string
   resolved_at: string | null
@@ -65,6 +127,11 @@ export interface Incident {
   comments?: Comment[]
   attachments?: Attachment[]
   history?: IncidentHistoryEntry[]
+  timelines?: IncidentTimelineEntry[]
+  iocs?: IncidentIocEntry[]
+  affected_systems?: IncidentAffectedSystemEntry[]
+  actions_taken?: IncidentActionTakenEntry[]
+  remediation_actions?: IncidentRemediationActionEntry[]
   created_at?: string | null
   updated_at?: string | null
   deleted_at?: string | null

@@ -10,6 +10,8 @@ export interface Attachment {
   file_path: string
   mime_type: string
   size_bytes: number
+  file_hash: string | null
+  description: string | null
   user?: User
   created_at: string
   updated_at: string

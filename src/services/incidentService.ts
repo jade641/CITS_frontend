@@ -6,6 +6,11 @@ import type {
   Incident,
   SeverityLevel,
   PaginatedResponse,
+  IncidentTimelineEntry,
+  IncidentIocEntry,
+  IncidentAffectedSystemEntry,
+  IncidentActionTakenEntry,
+  IncidentRemediationActionEntry,
 } from '../interfaces'
 import { apiClient, buildQuery } from './http'
 
@@ -120,5 +125,157 @@ export async function addAttachment(
     },
   )
 
+  return data
+}
+
+export async function updateIncidentStatus(
+  id: number,
+  status: string,
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.patch<{ message: string; incident: Incident }>(
+    `/incidents/${id}/status`,
+    { status },
+  )
+  return data
+}
+
+export async function saveIncidentTimeline(
+  id: number,
+  entries: IncidentTimelineEntry[],
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/timeline`,
+    { entries },
+  )
+  return data
+}
+
+export async function saveIncidentIocs(
+  id: number,
+  entries: IncidentIocEntry[],
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/iocs`,
+    { entries },
+  )
+  return data
+}
+
+export async function saveIncidentAffectedSystems(
+  id: number,
+  entries: IncidentAffectedSystemEntry[],
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/affected-systems`,
+    { entries },
+  )
+  return data
+}
+
+export async function saveIncidentActionsTaken(
+  id: number,
+  entries: IncidentActionTakenEntry[],
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/actions-taken`,
+    { entries },
+  )
+  return data
+}
+
+export async function saveIncidentSeverity(
+  id: number,
+  payload: {
+    confidentiality_impact: string
+    integrity_impact: string
+    availability_impact: string
+    affected_systems_count: number
+    data_sensitivity: string
+    severity_override: boolean
+    severity?: string
+    severity_override_justification?: string
+  },
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/severity`,
+    payload,
+  )
+  return data
+}
+
+export async function uploadEvidenceFile(
+  id: number,
+  file: File,
+  description: string,
+): Promise<{ message: string; attachment: Attachment; incident: Incident }> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('description', description)
+
+  const { data } = await apiClient.post<{ message: string; attachment: Attachment; incident: Incident }>(
+    `/incidents/${id}/evidence`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  )
+  return data
+}
+
+export async function saveIncidentFindings(
+  id: number,
+  payload: {
+    root_cause_category: string
+    root_cause_explanation: string
+    lessons_learned: string
+  },
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/findings`,
+    payload,
+  )
+  return data
+}
+
+export async function saveIncidentRemediationActions(
+  id: number,
+  entries: IncidentRemediationActionEntry[],
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/remediation-actions`,
+    { entries },
+  )
+  return data
+}
+
+export async function submitIncidentResolution(
+  id: number,
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/submit-resolution`,
+  )
+  return data
+}
+
+export async function reviewIncidentResolution(
+  id: number,
+  action: 'approve' | 'reject',
+  rejectionReason?: string,
+): Promise<{ message: string; incident: Incident }> {
+  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
+    `/incidents/${id}/review`,
+    { action, rejection_reason: rejectionReason },
+  )
+  return data
+}
+
+export async function getIncidentAuditLog(
+  id: number,
+): Promise<{ audit_logs: any[] }> {
+  const { data } = await apiClient.get<{ audit_logs: any[] }>(
+    `/incidents/${id}/audit-log`,
+  )
   return data
 }
