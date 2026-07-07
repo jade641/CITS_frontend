@@ -10,7 +10,7 @@ export interface CITSUser {
   name: string;
   email: string;
   role: UserRole;
-  rawRole: 'Admin' | 'Supervisor' | 'Analyst';
+  rawRole: 'Admin' | 'Analyst';
   avatar: string;
   department: string;
   lastLogin: string;
@@ -93,7 +93,7 @@ function getInitials(name: string): string {
 
 function mapRole(primaryRole: User["primary_role"], dbRole?: string | null): UserRole {
   if (dbRole === "Admin" || primaryRole === "administrator") return "admin";
-  if (dbRole === "Supervisor" || dbRole === "Analyst" || primaryRole === "security-analyst") return "analyst";
+  if (dbRole === "Analyst" || primaryRole === "security-analyst") return "analyst";
   return "user";
 }
 
@@ -209,7 +209,6 @@ export const statusColor = (s: string) => {
   if (s === "contained") return "text-cyan-400 bg-cyan-400/10 border-cyan-400/30";
   if (s === "eradicated") return "text-orange-400 bg-orange-400/10 border-orange-400/30";
   if (s === "recovering") return "text-yellow-400 bg-yellow-400/10 border-yellow-400/30";
-  if (s === "pending_review") return "text-rose-400 bg-rose-400/10 border-rose-400/30";
   if (s === "closed") return "text-green-400 bg-green-400/10 border-green-400/30";
   return "text-slate-400 bg-slate-400/10 border-slate-400/30";
 };

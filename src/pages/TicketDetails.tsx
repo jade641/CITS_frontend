@@ -7,14 +7,13 @@ import type { Incident } from "../interfaces/incident";
 const CARD = "#0d1e35";
 const BORDER = "rgba(30,60,100,0.35)";
 
-const LIFECYCLE = ["new", "investigating", "contained", "eradicated", "recovering", "pending_review", "closed"] as const;
+const LIFECYCLE = ["new", "investigating", "contained", "eradicated", "recovering", "closed"] as const;
 const LIFECYCLE_LABELS: Record<string, string> = {
   new: "New",
   investigating: "Investigating",
   contained: "Contained",
   eradicated: "Eradicated",
   recovering: "Recovering",
-  pending_review: "Pending Review",
   closed: "Closed",
 };
 

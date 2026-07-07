@@ -256,8 +256,7 @@ export default function Investigation() {
   
   // Checking workflow locks
   const isClosed = effectiveStatus === "closed";
-  const isPendingReview = effectiveStatus === "pending_review";
-  const isLocked = isClosed || isPendingReview; // Locked from Analyst modifications
+  const isLocked = isClosed; // Locked from Analyst modifications
 
   const triggerSaveNotification = (section: string, status: "saving" | "saved" | "error") => {
     setSaveStatus(prev => ({ ...prev, [section]: status }));
@@ -413,29 +412,6 @@ export default function Investigation() {
     }
   };
 
-  // Supervisor Approval Action
-  const handleReviewAction = async (action: "approve" | "reject") => {
-    if (!incident) return;
-    if (action === "reject" && !rejectionReasonText.trim()) {
-      alert("Please provide a rejection reason.");
-      return;
-    }
-
-    try {
-      const res = await reviewIncidentResolution(
-        incident.id, 
-        action, 
-        action === "reject" ? rejectionReasonText.trim() : undefined
-      );
-      setIncident(res.incident);
-      setShowRejectionForm(false);
-      setRejectionReasonText("");
-      setTab("details");
-    } catch (err: any) {
-      alert(err?.response?.data?.message || "Failed to complete review action");
-    }
-  };
-
   // Submit findings checklist validator
   const canSubmitResolution = useMemo(() => {
     const hasFindings = rootCauseCategory.trim() !== "" && 
@@ -453,14 +429,13 @@ export default function Investigation() {
     { id: "audit", label: "Audit Logs", icon: Clock },
   ] as const;
 
-  const LIFECYCLE = ["new", "investigating", "contained", "eradicated", "recovering", "pending_review", "closed"] as const;
+  const LIFECYCLE = ["new", "investigating", "contained", "eradicated", "recovering", "closed"] as const;
   const LIFECYCLE_LABELS: Record<string, string> = {
     new: "New",
     investigating: "Investigating",
     contained: "Contained",
     eradicated: "Eradicated",
     recovering: "Recovering",
-    pending_review: "Pending Review",
     closed: "Closed",
   };
 
@@ -543,7 +518,7 @@ export default function Investigation() {
                 className="bg-[#080d1a] text-xs text-slate-200 outline-none rounded p-1 border cursor-pointer border-slate-700/60"
               >
                 {incidentStatuses
-                  .filter(s => !["pending_review", "closed"].includes(s.slug)) // Cannot jump directly here
+                  .filter(s => s.slug !== "closed") // Cannot jump directly here
                   .map(s => (
                     <option key={s.id} value={s.slug}>{s.name}</option>
                   ))
@@ -554,91 +529,7 @@ export default function Investigation() {
         </div>
       </div>
 
-      {/* 2. Supervisor Approval Banner (If pending review) */}
-      {isPendingReview && (
-        <div className="rounded-xl p-5 border shadow-lg flex flex-col gap-4"
-          style={{ background: "rgba(244,63,94,0.06)", borderColor: "rgba(244,63,94,0.3)" }}>
-          <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-rose-400 mt-0.5 shrink-0" />
-            <div className="flex-1">
-              <h3 className="text-rose-200 font-semibold text-sm">Resolution Awaiting Supervisor Review</h3>
-              <p className="text-slate-300 text-xs mt-1">
-                The incident resolution has been submitted by the Analyst and is currently locked for review.
-              </p>
-            </div>
-          </div>
-          
-          {isSupervisorOrAdmin ? (
-            <div className="space-y-4 border-t pt-4 border-rose-900/30">
-              <p className="text-xs font-semibold text-rose-300">Supervisor Decision Gates:</p>
-              
-              {!showRejectionForm ? (
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => handleReviewAction("approve")}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all shadow-md"
-                  >
-                    <ThumbsUp className="h-3.5 w-3.5" /> Approve & Close Incident
-                  </button>
-                  <button 
-                    onClick={() => setShowRejectionForm(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-505 text-white rounded-lg text-xs font-bold transition-all shadow-md"
-                  >
-                    <ThumbsDown className="h-3.5 w-3.5" /> Reject Resolution
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-2 max-w-xl">
-                  <label className="block text-xs font-medium text-slate-300">Required Rejection Reason:</label>
-                  <textarea 
-                    value={rejectionReasonText}
-                    onChange={(e) => setRejectionReasonText(e.target.value)}
-                    rows={3}
-                    placeholder="Enter details on what needs correction..."
-                    className="w-full text-xs p-2.5 rounded-lg text-slate-200 bg-slate-950/80 outline-none border resize-none"
-                    style={{ borderColor: BORDER }}
-                  />
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => handleReviewAction("reject")}
-                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded"
-                    >
-                      Submit Rejection
-                    </button>
-                    <button 
-                      onClick={() => { setShowRejectionForm(false); setRejectionReasonText(""); }}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1">
-              <Lock className="h-3.5 w-3.5" /> Awaiting Supervisor review. Workspace is locked.
-            </span>
-          )}
-        </div>
-      )}
 
-      {/* 3. Rejection Banner alert (If Investigating and has rejection reason) */}
-      {effectiveStatus === "investigating" && incident.rejection_reason && (
-        <div className="rounded-xl p-4 flex gap-3 border"
-          style={{ background: "rgba(239,68,68,0.08)", borderColor: "rgba(239,68,68,0.25)" }}>
-          <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
-          <div>
-            <h4 className="text-red-300 text-sm font-semibold">Resolution Rejected by Supervisor</h4>
-            <p className="text-slate-300 text-xs mt-1">
-              <strong>Reason:</strong> {incident.rejection_reason}
-            </p>
-            <p className="text-slate-400 text-[11px] mt-1.5">
-              Please review the feedback, perform containment/remediation updates, and re-submit.
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* 4. Closed Lock Banner */}
       {isClosed && (
@@ -1434,14 +1325,14 @@ export default function Investigation() {
                 </div>
 
                 <div className="pt-2 flex justify-between items-center flex-wrap gap-2">
-                  <span className="text-[11px] text-slate-500">All checklist requirements must be met before submitting the incident for Supervisor approval.</span>
+                  <span className="text-[11px] text-slate-500">All checklist requirements must be met before resolving and closing the incident.</span>
                   
                   <button 
                     onClick={handleSubmitResolutionFlow}
                     disabled={!canSubmitResolution}
                     className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
                   >
-                    <CheckCircle2 className="h-4 w-4" /> Submit Resolution for Review
+                    <CheckCircle2 className="h-4 w-4" /> Resolve & Close Incident
                   </button>
                 </div>
               </div>

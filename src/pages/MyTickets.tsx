@@ -102,7 +102,7 @@ export default function MyTickets() {
         </div>
         <div className="flex gap-2">
           {[
-            { label: "Status", value: filterStatus, set: setFilterStatus, options: ["all", "new", "investigating", "contained", "eradicated", "recovering", "pending_review", "closed"] },
+            { label: "Status", value: filterStatus, set: setFilterStatus, options: ["all", "new", "investigating", "contained", "eradicated", "recovering", "closed"] },
             { label: "Severity", value: filterSeverity, set: setFilterSeverity, options: ["all", "critical", "high", "medium", "low"] },
           ].map((filter) => (
             <div key={filter.label} className="relative">

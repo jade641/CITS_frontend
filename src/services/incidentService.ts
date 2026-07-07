@@ -259,18 +259,6 @@ export async function submitIncidentResolution(
   return data
 }
 
-export async function reviewIncidentResolution(
-  id: number,
-  action: 'approve' | 'reject',
-  rejectionReason?: string,
-): Promise<{ message: string; incident: Incident }> {
-  const { data } = await apiClient.post<{ message: string; incident: Incident }>(
-    `/incidents/${id}/review`,
-    { action, rejection_reason: rejectionReason },
-  )
-  return data
-}
-
 export async function getIncidentAuditLog(
   id: number,
 ): Promise<{ audit_logs: any[] }> {
