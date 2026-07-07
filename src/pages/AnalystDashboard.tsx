@@ -73,7 +73,7 @@ export default function AnalystDashboard() {
         if (!active) return;
         
         setIncidents(response.data || []);
-      } catch (err) {
+      } catch {
         if (!active) return;
         setIncidents([]);
       } finally {

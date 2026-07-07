@@ -65,7 +65,7 @@ export default function ReportIncident() {
       const response = await createIncident(payload);
       setTicketId(response.incident.ticket_number);
       setSubmitted(true);
-    } catch (error) {
+    } catch {
       setErrors({ form: "Unable to submit incident. Please try again." });
     } finally {
       setIsSubmitting(false);

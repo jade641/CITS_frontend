@@ -160,7 +160,7 @@ export default function Investigation() {
     return () => {
       active = false;
     };
-  }, [selectedTicketId]);
+  }, [selectedTicketId, currentUser?.role]);
 
   // Load specific incident data into local states when selected ticket changes
   useEffect(() => {
