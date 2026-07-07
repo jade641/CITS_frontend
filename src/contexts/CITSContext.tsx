@@ -117,12 +117,9 @@ export function CITSProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Only attempt to fetch the current user if a Laravel session cookie exists.
-    // Don't treat `XSRF-TOKEN` as proof of an authenticated session because dev
-    // tooling may set it before a user is logged in, which would otherwise
-    // generate noisy 401 requests to `/auth/me`.
-    const hasSessionCookie = /(?:laravel_session)=/.test(document.cookie);
-    if (!hasSessionCookie) {
+    // Only attempt to fetch the current user if we have a stored auth token.
+    const token = localStorage.getItem('cits_auth_token');
+    if (!token) {
       return () => {
         mounted = false;
       };
@@ -144,7 +141,10 @@ export function CITSProvider({ children }: { children: ReactNode }) {
               : "user-dashboard",
         );
       })
-      .catch(() => undefined);
+      .catch(() => {
+        // Token is invalid/expired, remove it
+        localStorage.removeItem('cits_auth_token');
+      });
 
     return () => {
       mounted = false;

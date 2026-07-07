@@ -1,5 +1,5 @@
 import type { ApiMessage, User } from '../interfaces'
-import { apiClient } from './http'
+import { apiClient, setStoredToken, removeStoredToken } from './http'
 
 export interface LoginPayload {
   email: string
@@ -41,21 +41,30 @@ export interface UpdateProfilePayload {
 
 export interface AuthResponse extends ApiMessage {
   user: User
+  token: string
 }
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
   const { data } = await apiClient.post<AuthResponse>('/auth/login', payload)
+  // Store the Bearer token for all subsequent requests
+  setStoredToken(data.token)
   return data
 }
 
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
   const { data } = await apiClient.post<AuthResponse>('/auth/register', payload)
+  setStoredToken(data.token)
   return data
 }
 
 export async function logout(): Promise<ApiMessage> {
-  const { data } = await apiClient.post<ApiMessage>('/auth/logout')
-  return data
+  try {
+    const { data } = await apiClient.post<ApiMessage>('/auth/logout')
+    return data
+  } finally {
+    // Always remove the token, even if the API call fails
+    removeStoredToken()
+  }
 }
 
 export async function getCurrentUser(): Promise<{ user: User }> {

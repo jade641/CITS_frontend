@@ -4,54 +4,36 @@ import axios from 'axios'
 const productionApiBaseUrl = 'https://cits-backend-s12z.onrender.com/api'
 const apiBaseUrl = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? '/api' : productionApiBaseUrl)
 
-function getSanctumBaseUrl(baseUrl: string): string {
-  if (/^https?:\/\//i.test(baseUrl)) {
-    try {
-      return `${new URL(baseUrl).origin}/`
-    } catch {
-      return '/'
-    }
-  }
+const TOKEN_KEY = 'cits_auth_token'
 
-  return '/'
+export function getStoredToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY)
+}
+
+export function setStoredToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token)
+}
+
+export function removeStoredToken(): void {
+  localStorage.removeItem(TOKEN_KEY)
 }
 
 const defaultHeaders = {
   Accept: 'application/json',
-  'X-Requested-With': 'XMLHttpRequest',
+  'Content-Type': 'application/json',
 } as const
-
-const sanctumClient = axios.create({
-  baseURL: getSanctumBaseUrl(apiBaseUrl),
-  withCredentials: true,
-  headers: defaultHeaders,
-})
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,
-  withCredentials: true,
   headers: defaultHeaders,
 })
 
-let csrfRequest: Promise<void> | null = null
-
-export async function ensureCsrfCookie(): Promise<void> {
-  if (!csrfRequest) {
-    csrfRequest = sanctumClient.get('/sanctum/csrf-cookie').then(() => undefined).finally(() => {
-      csrfRequest = null
-    })
+// Attach Bearer token to every request if available
+apiClient.interceptors.request.use((config) => {
+  const token = getStoredToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
-
-  await csrfRequest
-}
-
-apiClient.interceptors.request.use(async (config) => {
-  const method = config.method?.toLowerCase()
-
-  if (method && !['get', 'head', 'options'].includes(method)) {
-    await ensureCsrfCookie()
-  }
-
   return config
 })
 
@@ -95,7 +77,7 @@ export function getDownloadFilename(
   contentDisposition: string | undefined,
   fallbackFilename: string,
 ): string {
-  const fileNameMatch = contentDisposition?.match(/filename="?([^\"]+)"?/)?.[1]
+  const fileNameMatch = contentDisposition?.match(/filename="?([^\\"]+)"?/)?.[1]
 
   return fileNameMatch ?? fallbackFilename
 }
