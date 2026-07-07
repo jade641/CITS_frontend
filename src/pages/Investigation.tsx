@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { 
   ArrowLeft, FileText, Shield, CheckCircle2, Save, Trash2, Upload, 
   Paperclip, Search, 
@@ -369,7 +369,7 @@ export default function Investigation() {
   };
 
   // Upload Evidence gate
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setUploadFile(file);

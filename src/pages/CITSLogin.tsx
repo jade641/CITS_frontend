@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Shield, Eye, EyeOff, Lock, Mail, AlertCircle, Wifi } from "lucide-react";
 import InfoSecLogo from "../../Logo/InfoSec_Logo.png";
 import { useCITS } from "../contexts/CITSContext";
@@ -15,7 +15,7 @@ export default function CITSLogin() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSent, setForgotSent] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -25,7 +25,7 @@ export default function CITSLogin() {
     setLoading(false);
   };
 
-  const handleForgot = async (e: React.FormEvent) => {
+  const handleForgot = async (e: FormEvent) => {
     e.preventDefault();
     await new Promise(r => setTimeout(r, 600));
     setForgotSent(true);

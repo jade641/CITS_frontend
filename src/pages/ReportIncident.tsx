@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { FileWarning, Upload, X, CheckCircle2, AlertTriangle, Shield, ChevronDown, Calendar, MapPin, FileText } from "lucide-react";
 import { useCITS } from "../contexts/CITSContext";
 import { createIncident } from "../services/incidentService";
@@ -43,7 +43,7 @@ export default function ReportIncident() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!validate()) {
